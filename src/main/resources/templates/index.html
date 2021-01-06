@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" style="overflow: hidden">
+<meta charset="utf-8">
+<style>
+    .btn {
+        width: 150px;
+        padding: 3px;
+        background-color: #f7f8f9;
+        color: #428bca;
+        text-align: center;
+        vertical-align: middle;
+        font-weight: 900;
+        font-size: 120%;
+    }
+
+    .start {
+        border: groove 0.5em darkgrey;
+        border-radius: 2em;
+    }
+
+    .startAfter {
+        border: groove 0.5em lawngreen;
+        border-radius: 2em;
+    }
+
+    .clear {
+        border: groove 0.5em red;
+        border-radius: 2em;
+    }
+</style>
+<body>
+
+<div style="text-align: center;
+    width: 800px;
+    height: 600px;
+    margin: 92px 0 0 550px;">
+    <div>
+        <div style="
+         width: 500px;
+         margin: auto;
+         padding: 45% 0%;">
+            <div id="countDown" style="font-size: 20px;color: red;position: relative;top: -7rem;"></div>
+            <input type="button" id="bt" onclick="start()" class="btn start" title="没错！点他就能启动" value="启动工具">
+            <input type="button" class="btn clear" onclick="clearRedis()" title="修改了数据范围?没错,点他吧" value="清除redis">
+            <input type="button" id="stop" class="btn clear" onclick="stopPro()" title="出问题了？点他吧，如果还没停止，那就惨了！" value="停止工具">
+        </div>
+    </div>
+</div>
+<script src="http://apps.bdimg.com/libs/jquery/1.6.4/jquery.js"></script>
+<script>
+    function formatDate(d) {
+        d = d || new Date();
+
+        let f = (v) => ('0' + v).substr(-2);
+        return d.getFullYear() + '/'
+            + f(d.getMonth() + 1) + '/'
+            + f(d.getDate()) + ' '
+            + f(d.getHours()) + ':'
+            + f(d.getMinutes()) + ':'
+            + f(d.getSeconds());
+    }
+
+    var time;
+
+    function start() {
+        time = formatDate(new Date(new Date().getTime() + 5000));
+        countDown()
+    }
+
+    function btnStartCss() {
+        $("#countDown").text("智观模拟数据洗入-->已开始")
+        var bt = $("#bt")
+        bt.val("已启动");
+        bt.attr("disabled", "disabled");
+        bt.removeAttr("title");
+        bt.removeAttr("class");
+        bt.attr("class", "btn startAfter")
+    }
+
+
+    //倒计时
+    function countDown() {
+        var endTime = time;
+        var currentTime = new Date().getTime();  //当前的时间
+        var countDownTime = parseInt((new Date(endTime).getTime() - currentTime) / 1000);  //需要倒计时的时间
+        countDownTime -= 1
+        var hours = parseInt(countDownTime / 60 / 60);
+        var getMinutes = parseInt(countDownTime / 60 % 60);
+        var seconds = parseInt(countDownTime % 60);
+        if (countDownTime <= 0) {
+            btnStartCss();
+            var config = {
+                url: 'rundata',
+                type: "post",
+                dataType: "json",
+                success: function (res) {
+                    debugger
+                    if (res==0){
+                        alert("已经启动啦！")
+                    }
+                    if (res==1){
+                        alert("终于停了！")
+                        window.location.reload()
+                    }
+                }
+            };
+            $.ajax(config)
+        } else {
+            $("#countDown").html("即将开始<span>" + seconds + "秒</span>")
+            setTimeout(countDown, 1000);
+        }
+    }
+
+
+    function clearRedis() {
+        var config = {
+            url: 'clearRedis',
+            type: "post",
+            dataType: "json",
+            success: function (res) {
+                debugger
+                if (res == '1') {
+                    alert("清除成功")
+                } else {
+                    alert("清除失败")
+                }
+                window.location.reload()
+            }
+        };
+        $.ajax(config)
+    }
+
+    function stopPro() {
+        var config = {
+            url: 'end',
+            type: "post",
+            dataType: "json",
+            async: false,
+            success: function (res) {
+                if (res === 1) {
+                    alert("已经停啦！别点了！");
+                } else if (res === 0) {
+                    alert("正在停啊。。。桥的吗得")
+                    $("#stop").attr("disabled", "disabled");
+                } else {
+                    alert("糟糕！失败了！")
+                }
+            }, error: function (res) {
+                debugger
+            }
+        };
+        $.ajax(config)
+    }
+
+
+    $(function () {
+        var isStart = [[${isStart}]];
+        debugger
+        if (isStart !==0) {
+            btnStartCss()
+        }
+    })
+
+</script>
+</body>
+</html>
