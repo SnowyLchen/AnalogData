@@ -1,0 +1,39 @@
+server:
+  port: 8010
+  servlet:
+    # 项目contextPath
+    context-path: /
+spring:
+  application:
+    name: demo-redis
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+#    url : jdbc:mysql://39.100.146.125/hdzhny_mfrs?userSSL=false
+    url : jdbc:mysql://192.168.1.200/hdzhny_mfrs?userSSL=false
+    username: root
+    password: YZgP3oX2
+    type: com.zaxxer.hikari.HikariDataSource
+  redis:
+    host: 192.168.1.194
+    timeout: 50000
+#    password: 1g47t6cj311w
+    password: 123456
+    port: 6379
+    jedis:
+      pool:
+        max-wait: 30000
+        max-active: 100
+        max-idle: 20
+        min-idle: 0
+  # 服务模块
+  devtools:
+    restart:
+      # 热部署开关
+      enabled: true
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+logging:
+  level:
+    com.cj.demoredis.mapper : debug
+
