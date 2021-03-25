@@ -10,7 +10,7 @@ public interface PlcTemplateService {
      *
      * @return
      */
-    List<MfrsPlctemplateInfo> queryPlcTemplateList();
+    List<MfrsPlctemplateInfo> queryPlcTemplateList(Integer siteId);
 
     /**
      * 查询temp
@@ -24,7 +24,7 @@ public interface PlcTemplateService {
      *
      * @return
      */
-    List<MfrsPlctemplateInfo> queryRefeValue();
+    List<MfrsPlctemplateInfo> queryRefeValue(String plcIds);
 
     /**
      * 插入数据info
@@ -57,4 +57,10 @@ public interface PlcTemplateService {
      */
     int deleteTemp(long time);
 
+    /**
+     *
+     * @param plcTypes
+     * @return
+     */
+    String queryPlctempIds(String plcTypes);
 }

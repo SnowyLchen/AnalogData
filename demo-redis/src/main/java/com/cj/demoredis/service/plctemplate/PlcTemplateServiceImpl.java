@@ -2,7 +2,6 @@ package com.cj.demoredis.service.plctemplate;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.cj.demoredis.domain.MfrsPlctemplateInfo;
 import com.cj.demoredis.mapper.PlcTemplateMapper;
 import com.cj.demoredis.service.redis.RedisService;
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 @Service
@@ -30,12 +28,16 @@ public class PlcTemplateServiceImpl implements PlcTemplateService {
     private RedisService redisService;
 
     @Override
-    public List<MfrsPlctemplateInfo> queryPlcTemplateList() {
+    public List<MfrsPlctemplateInfo> queryPlcTemplateList(Integer siteId) {
         List<MfrsPlctemplateInfo> plctemplates = null;
         String plctemplateString = redisService.get(LIST_PLC_KEY);
         if (plctemplateString == null) {
             System.out.println("============从数据库中查询============");
-            plctemplates = plcTemplateMapper.queryPlcTemplateList();
+            if (siteId == null) {
+                plctemplates = plcTemplateMapper.queryPlcTemplateList();
+            } else {
+                plctemplates = plcTemplateMapper.queryPlcTemplateList2(siteId);
+            }
             //将users转为字符串类型存入
             String toJSONString = JSON.toJSONString(plctemplates);
             //将查出的数据存入redis中
@@ -69,7 +71,7 @@ public class PlcTemplateServiceImpl implements PlcTemplateService {
     }
 
     @Override
-    public List<MfrsPlctemplateInfo> queryRefeValue() {
+    public List<MfrsPlctemplateInfo> queryRefeValue(String plcIds) {
 //        List<MfrsPlctemplateInfo> plctemplates = null;
 //        String ps = redisService.get(LIST_CON_KEY);
 //        if (ps == null || "[]".equals(ps)) {
@@ -83,7 +85,7 @@ public class PlcTemplateServiceImpl implements PlcTemplateService {
 //            plctemplates = JSONArray.parseArray(ps, MfrsPlctemplateInfo.class);
 //        }
 //        return plctemplates;
-        return plcTemplateMapper.queryRefeValue();
+        return plcTemplateMapper.queryRefeValue(plcIds);
     }
 
     @Override
@@ -109,5 +111,10 @@ public class PlcTemplateServiceImpl implements PlcTemplateService {
     @Override
     public int deleteTemp(long time) {
         return plcTemplateMapper.deleteTemp(time);
+    }
+
+    @Override
+    public String queryPlctempIds(String plcTypes) {
+        return plcTemplateMapper.queryPlctempIds(plcTypes);
     }
 }
