@@ -19,6 +19,7 @@ public class DataServiceImpl implements DataService {
     private Integer[] types;
     private Integer[] scatter;
     private Integer[] electric;
+    private Integer[] hvac;
 
     public DataServiceImpl(@NonNull ApiConfig apiConfig) {
         this.consumption = apiConfig.getConsumption();
@@ -31,6 +32,7 @@ public class DataServiceImpl implements DataService {
         this.types = apiConfig.getTypes();
         this.electric = apiConfig.getElectric();
         this.scatter = apiConfig.getScatter();
+        this.hvac = apiConfig.getHvac();
     }
 
     @Override
@@ -81,5 +83,10 @@ public class DataServiceImpl implements DataService {
     @Override
     public Integer[] getScatter() {
         return scatter;
+    }
+
+    @Override
+    public Integer[] getHVAC() {
+        return hvac;
     }
 }

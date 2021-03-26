@@ -21,4 +21,5 @@ public class ApiConfig {
     private Integer[] types;
     private Integer[] electric;
     private Integer[] scatter;
+    private Integer[] hvac;
 }

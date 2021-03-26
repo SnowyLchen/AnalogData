@@ -6,7 +6,6 @@ import com.cj.demoredis.utils.MockConfiguration;
 import com.cj.demoredis.utils.ThreadUtils;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
 public class Job implements Runnable {

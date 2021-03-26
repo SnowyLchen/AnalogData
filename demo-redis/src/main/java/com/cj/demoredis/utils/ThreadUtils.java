@@ -296,7 +296,7 @@ public class ThreadUtils {
 
     public static void execute(PlcTemplateService plcTemplateService, DataService dataService) throws InterruptedException {
         // 查询模板
-        List<MfrsPlctemplateInfo> plctemplates = plcTemplateService.queryPlcTemplateList(181);
+        List<MfrsPlctemplateInfo> plctemplates = plcTemplateService.queryPlcTemplateList(null);
         // 查询消耗的
         Integer[] consumption = dataService.getConsumption();
         Integer[] electric = dataService.getElectric();
@@ -309,8 +309,10 @@ public class ThreadUtils {
                 .map(String::valueOf)
                 .collect(Collectors.toList());
         Integer[] types = dataService.getTypes();
-        List<Integer> list = Arrays.asList(types);
-        int count = 40;
+        Integer[] hvac = dataService.getHVAC();
+        Integer[] HVAC_GPD = contact(types, hvac);
+        List<Integer> list = Arrays.asList(HVAC_GPD);
+        int count = 50;
         int listSize = plctemplates.size();
         //线程数
         int runSize = (listSize / count) + 1;

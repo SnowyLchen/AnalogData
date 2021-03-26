@@ -246,7 +246,7 @@ public class TestController {
                     put("time", (e - s) / 1000 + "秒");
                 }};
                 redisService.set("map", JSON.toJSONString(hashMap));
-                Thread.sleep(30000 - (e - s));
+                Thread.sleep(40000 - (e - s));
             } catch (Exception e) {
                 e.printStackTrace();
                 System.out.println("出错");

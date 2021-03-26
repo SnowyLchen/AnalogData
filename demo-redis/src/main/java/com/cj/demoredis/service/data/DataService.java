@@ -20,4 +20,6 @@ public interface DataService {
     Integer[] getElectric();
 
     Integer[] getScatter();
+
+    Integer[] getHVAC();
 }
