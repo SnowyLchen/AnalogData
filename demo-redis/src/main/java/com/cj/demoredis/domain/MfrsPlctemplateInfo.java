@@ -8,6 +8,7 @@ import lombok.ToString;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * mfrs_plctemplate_info
@@ -111,4 +112,6 @@ public class MfrsPlctemplateInfo implements Serializable {
     private String regex;
 
     private Integer plcType;
+
+    private String uuid;
 }

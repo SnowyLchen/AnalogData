@@ -6,6 +6,7 @@ import com.cj.demoredis.utils.MockConfiguration;
 import com.cj.demoredis.utils.ThreadUtils;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
 public class Job implements Runnable {
@@ -48,12 +49,10 @@ public class Job implements Runnable {
                     }
                 }
             }
-
             e = System.currentTimeMillis() - s;
             System.out.println(Thread.currentThread().getName() + "线程大小：：" + plctemplates.size() + "：下标：" + startIndex + "-" + endIndex);
             System.out.println("---->用时：" + (e / 1000) + "秒");
         } catch (Exception e) {
-            System.out.println(i);
             e.printStackTrace();
         } finally {
             countDownLatch.countDown();//发出线程任务完成的信号

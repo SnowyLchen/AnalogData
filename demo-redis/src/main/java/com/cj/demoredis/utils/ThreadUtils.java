@@ -1,14 +1,11 @@
 package com.cj.demoredis.utils;
 
-import com.cj.demoredis.DemoRedisApplication;
 import com.cj.demoredis.domain.Job;
 import com.cj.demoredis.domain.MfrsPlctemplateInfo;
 import com.cj.demoredis.service.data.DataService;
 import com.cj.demoredis.service.plctemplate.PlcTemplateService;
 import com.cj.demoredis.service.redis.RedisService;
 import com.forte.util.Mock;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.text.DecimalFormat;
@@ -155,9 +152,11 @@ public class ThreadUtils {
      * @param mfrsPlctemplateInfo
      * @param plcTemplateService
      */
-    public static void commit(MfrsPlctemplateInfo mfrsPlctemplateInfo, List<MfrsPlctemplateInfo> plcValue, List<MfrsPlctemplateInfo> slist, PlcTemplateService plcTemplateService, DataService dataService) {
-        Mock.reset(MfrsPlctemplateInfo.class, createValue(mfrsPlctemplateInfo, slist, dataService));
-        MfrsPlctemplateInfo one = Mock.get(MfrsPlctemplateInfo.class).getOne();
+    public static void commit(MfrsPlctemplateInfo mfrsPlctemplateInfo, List<MfrsPlctemplateInfo> plcValue, List<MfrsPlctemplateInfo> slist, PlcTemplateService plcTemplateService, DataService dataService) throws Exception {
+        String uuid = UUID.randomUUID().toString();
+        MockUtilsCopy.set(uuid, createValue(mfrsPlctemplateInfo, slist, dataService));
+        MockUtilsCopy.clearMock();
+        MfrsPlctemplateInfo one = (MfrsPlctemplateInfo) MockUtilsCopy.mapToObject(MockUtilsCopy.get(uuid).getOne(), MfrsPlctemplateInfo.class);
         // 电，水气流量消耗
         Integer[] con = dataService.getConsumption();
         Integer[] electric = dataService.getElectric();
@@ -173,11 +172,13 @@ public class ThreadUtils {
             }
             plcTemplateService.insert(one);
             plcTemplateService.insertTemp(one);
+//            System.out.println("第一：：：" + one);
         } else {
             for (int i = 0; i < plcValue.size(); i++) {
                 if (one.getPlctempId().equals(plcValue.get(i).getPlctempId())) {
                     // 原来的value+心的value
                     one.setRefeValue(String.valueOf(Double.parseDouble((plcValue.get(i).getRefeValue() != null ? plcValue.get(i).getRefeValue() : "0")) + caluConsumption(one.getPlctempId(), dataService)));
+//                    System.out.println("第二：：：" + one);
                     plcTemplateService.insert(one);
                     plcTemplateService.insertTemp(one);
                     break;
@@ -309,7 +310,7 @@ public class ThreadUtils {
                 .collect(Collectors.toList());
         Integer[] types = dataService.getTypes();
         List<Integer> list = Arrays.asList(types);
-        int count = 35;
+        int count = 40;
         int listSize = plctemplates.size();
         //线程数
         int runSize = (listSize / count) + 1;
@@ -383,7 +384,7 @@ public class ThreadUtils {
             map.put("refeValue|1-1.1", 0);
             Mock.reset(MfrsPlctemplateInfo.class, map);
             MfrsPlctemplateInfo one = Mock.get(MfrsPlctemplateInfo.class).getOne();
-            System.out.println(one.getRefeValue()+"-------------");
+            System.out.println(one.getRefeValue() + "-------------");
             System.out.println("---->用时：" + (System.currentTimeMillis() - s) + "毫秒");
         }
     }

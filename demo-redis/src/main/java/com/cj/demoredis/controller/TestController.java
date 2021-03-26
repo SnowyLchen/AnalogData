@@ -248,6 +248,7 @@ public class TestController {
                 redisService.set("map", JSON.toJSONString(hashMap));
                 Thread.sleep(30000 - (e - s));
             } catch (Exception e) {
+                e.printStackTrace();
                 System.out.println("出错");
                 ThreadUtils.execute(plcTemplateService, dataService);
                 Thread.sleep(10000);

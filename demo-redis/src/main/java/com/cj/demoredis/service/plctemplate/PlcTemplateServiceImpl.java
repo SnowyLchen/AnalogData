@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class PlcTemplateServiceImpl implements PlcTemplateService {
@@ -96,9 +97,11 @@ public class PlcTemplateServiceImpl implements PlcTemplateService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int insertTemp(MfrsPlctemplateInfo mfrsPlctemplateInfo) {
+        UUID uuid = UUID.randomUUID();
+        mfrsPlctemplateInfo.setUuid(uuid.toString());
         int i = plcTemplateMapper.insertTemp(mfrsPlctemplateInfo);
         if (i > 0) {
-            plcTemplateMapper.deleteTempById(mfrsPlctemplateInfo.getPlctempId(), mfrsPlctemplateInfo.getPlctempInfoId());
+            plcTemplateMapper.deleteTempById(mfrsPlctemplateInfo.getPlctempId(), mfrsPlctemplateInfo.getUuid());
         }
         return 1;
     }

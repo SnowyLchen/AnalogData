@@ -34,15 +34,15 @@ public interface PlcTemplateMapper {
             "WHERE mpit.del_flag = 0 AND mp.plc_type in (114,119,120)")
     List<MfrsPlctemplateInfo> queryPlcTemplateTempList();
 
-    @Insert("INSERT INTO mfrs_plctemplate_info_temp (plctemp_id,site_id,modbus,register_lowercase,refe_key,refe_value,status,mfrs_id,plc_info_time,del_flag,create_time,update_time)" +
-            " VALUES(#{plctempId},#{siteId},#{modbus},#{registerLowercase},#{refeKey},#{refeValue},#{status},#{mfrsId},#{plcInfoTime},#{delFlag},#{createTime},#{updateTime})")
+    @Insert("INSERT INTO mfrs_plctemplate_info_temp (plctemp_id,site_id,modbus,register_lowercase,refe_key,refe_value,status,mfrs_id,plc_info_time,del_flag,create_time,update_time,uuid)" +
+            " VALUES(#{plctempId},#{siteId},#{modbus},#{registerLowercase},#{refeKey},#{refeValue},#{status},#{mfrsId},#{plcInfoTime},#{delFlag},#{createTime},#{updateTime},#{uuid})")
     @Options(useGeneratedKeys = true, keyProperty = "plctempInfoId", keyColumn = "plctemp_info_id")
     int insertTemp(MfrsPlctemplateInfo mfrsPlctemplateInfo);
 
     @Delete("update mfrs_plctemplate_info_temp set refe_value=#{refeValue}, update_time=#{updateTime}, plc_info_time=#{plcInfoTime} where plctemp_id=#{plctempId}")
     int updateTemp(MfrsPlctemplateInfo mfrsPlctemplateInfo);
 
-    @Delete("delete from mfrs_plctemplate_info_temp where plctemp_id=#{plctempId} and plctemp_info_id != #{id}")
+    @Delete("delete from mfrs_plctemplate_info_temp where plctemp_id=#{plctempId} and uuid != #{id}")
     int deleteTempById(@Param("plctempId") int plctempId, @Param("id") String id);
 
     @Delete("delete from mfrs_plctemplate_info_temp where plc_info_time < FROM_UNIXTIME(#{time}/1000)")
