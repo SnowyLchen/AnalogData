@@ -4,70 +4,18 @@ import com.cj.demoredis.domain.Job;
 import com.cj.demoredis.domain.MfrsPlctemplateInfo;
 import com.cj.demoredis.service.data.DataService;
 import com.cj.demoredis.service.plctemplate.PlcTemplateService;
-import com.cj.demoredis.service.redis.RedisService;
 import com.forte.util.Mock;
 import org.springframework.stereotype.Component;
 
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Component
-//@PropertySource("classpath:application.yml")
-//@SpringBootApplication
 public class ThreadUtils {
-//
-//    @Autowired
-//    private DataService dataService;
-
-    public void exec(List<MfrsPlctemplateInfo> list, List<MfrsPlctemplateInfo> plcValue, List<MfrsPlctemplateInfo> slist, PlcTemplateService plcTemplateService, RedisService redisService) throws InterruptedException {
-        String ie = redisService.get("isEnd2");
-        if (ie != null && "0".equals(ie)) {
-            throw new RuntimeException("主线程停止");
-        }
-        // 一个线程处理的数据大小
-        int count = 100;
-        // 数据集合大小
-        int listSize = list.size();
-        // 开启的线程数
-        int runSize = (listSize / count) + 1;
-        // 创建一个线程池，大小和开启线程一样
-        ExecutorService executorService = ThreadPool.createPool("手动洗数据", runSize);
-        AtomicInteger index = new AtomicInteger(listSize);
-        //循环创建线程
-        long s1 = System.currentTimeMillis();
-        for (int j = 0; j < (listSize / runSize) + 1; j++) {
-            for (int i = 0; i < runSize; i++) {
-                long s = System.currentTimeMillis();
-                executorService.execute(() -> {
-                    try {
-                        int idx = index.decrementAndGet();
-                        if (idx < 0) {
-                            System.out.println("线程:" + Thread.currentThread().getName() + "结束");
-                        }
-                        System.out.println(idx);
-                        if (idx >= 0) {
-                            judge(list.get(idx), plcValue, slist, plcTemplateService, list.get(idx));
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    } finally {
-                        long e = System.currentTimeMillis();
-                        System.out.println("线程:" + Thread.currentThread().getName() + "---->用时：" + (e - s) + "毫秒");
-                    }
-                });
-            }
-        }
-        long e1 = System.currentTimeMillis();
-        System.out.println("线程总用时：" + (e1 - s1) + "毫秒");
-        //执行完关闭线程池
-        executorService.shutdown();
-    }
 
     // 40-45.0-9
     public static Map<String, Object> createValue(MfrsPlctemplateInfo plctemplateInfo, List<MfrsPlctemplateInfo> plcValue, DataService dataService) {
@@ -88,11 +36,11 @@ public class ThreadUtils {
         map.put("delFlag", plctemplateInfo.getDelFlag());
         map.put("refeKey", plctemplateInfo.getRefeKey());
         // 119->故障 250->烟感 251->红外 252->温感 253->明火 254->门禁
-        Integer[] plcTypes = {119, 250, 251, 252, 253, 254, 320};
+        Integer[] plcTypes = {119, 250, 251, 252, 253, 254, 320, 243, 266, 267, 321, 322};
         List<Integer> plcTypeList = Arrays.asList(plcTypes);
         if (gqsList.contains(plcType)) {
             if (plcValue.size() == 0) {
-                if (plcType == 114 || plcType == 120) {
+                if (plcType == 114 || plcType == 120 || plcType == 243 || plcType == 266 || plcType == 267 || plcType == 321 || plcType == 322) {
                     map.put("refeValue", RandomProbability(1, 0));
                 } else {
                     map.put("refeValue", RandomProbability(0, 1));
@@ -155,7 +103,6 @@ public class ThreadUtils {
     public static void commit(MfrsPlctemplateInfo mfrsPlctemplateInfo, List<MfrsPlctemplateInfo> plcValue, List<MfrsPlctemplateInfo> slist, PlcTemplateService plcTemplateService, DataService dataService) throws Exception {
         String uuid = UUID.randomUUID().toString();
         MockUtilsCopy.set(uuid, createValue(mfrsPlctemplateInfo, slist, dataService));
-        MockUtilsCopy.clearMock();
         MfrsPlctemplateInfo one = (MfrsPlctemplateInfo) MockUtilsCopy.mapToObject(MockUtilsCopy.get(uuid).getOne(), MfrsPlctemplateInfo.class);
         // 电，水气流量消耗
         Integer[] con = dataService.getConsumption();
@@ -185,15 +132,6 @@ public class ThreadUtils {
                 }
             }
         }
-    }
-
-    /**
-     * 判断单词循环遍历的数组下表
-     *
-     * @param plcTemplateService
-     */
-    public void judge(MfrsPlctemplateInfo mf, List<MfrsPlctemplateInfo> plcValue, List<MfrsPlctemplateInfo> slist, PlcTemplateService plcTemplateService, MfrsPlctemplateInfo mi) {
-//        commit(mf, plcValue, slist, plcTemplateService, mi);
     }
 
     /**
@@ -238,65 +176,10 @@ public class ThreadUtils {
         }
     }
 
-//    public static void main(String[] args) throws InterruptedException {
-//        ConfigurableApplicationContext applicationContext = SpringApplication.run(DemoRedisApplication.class, args);
-//        PlcTemplateService plcTemplateService = applicationContext.getBean(PlcTemplateService.class);
-//        DataService dataService = applicationContext.getBean(DataService.class);
-//        try {
-//            execute(plcTemplateService, dataService);
-//        } catch (Exception e) {
-//            System.out.println("出错");
-//            execute(plcTemplateService, dataService);
-//        }
-//    }
-//
-//    static ScheduledExecutorService scheduledExecutorService =
-//            Executors.newScheduledThreadPool(10);
 
-    private static void thread(int listSize, MfrsPlctemplateInfo plctemplate, List<MfrsPlctemplateInfo> plcValue, List<MfrsPlctemplateInfo> tempValue, PlcTemplateService plcTemplateService, DataService dataService) throws InterruptedException {
-        // 一个线程处理的数据大小
-        int count = 100;
-        // 开启的线程数
-        int runSize = (listSize / count) + 1;
-        // 创建一个线程池，大小和开启线程一样
-        ExecutorService executorService = ThreadPool.createPool("手动洗数据", runSize);
-        AtomicInteger index = new AtomicInteger(listSize);
-        //循环创建线程
-        long s1 = System.currentTimeMillis();
-        for (int j = 0; j < (listSize / runSize) + 1; j++) {
-            for (int i = 0; i < runSize; i++) {
-                long s = System.currentTimeMillis();
-                executorService.execute(() -> {
-                    try {
-                        int idx = index.decrementAndGet();
-                        if (idx < 0) {
-                            System.out.println("线程:" + Thread.currentThread().getName() + "结束");
-                        }
-                        System.out.println(idx);
-                        if (idx >= 0) {
-                            commit(plctemplate, plcValue, tempValue, plcTemplateService, dataService);
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    } finally {
-                        long e = System.currentTimeMillis();
-                        System.out.println("线程:" + Thread.currentThread().getName() + "---->用时：" + (e - s) + "毫秒");
-                    }
-                });
-            }
-        }
-        long e1 = System.currentTimeMillis();
-        System.out.println("线程总用时：" + (e1 - s1) + "毫秒");
-        //执行完关闭线程池
-        executorService.shutdown();
-
-//        commit(plctemplate, plcValue, tempValue, plcTemplateService, dataService);
-
-    }
-
-    public static void execute(PlcTemplateService plcTemplateService, DataService dataService) throws InterruptedException {
+    public static void execute(PlcTemplateService plcTemplateService, DataService dataService, Integer siteId) throws InterruptedException {
         // 查询模板
-        List<MfrsPlctemplateInfo> plctemplates = plcTemplateService.queryPlcTemplateList(null);
+        List<MfrsPlctemplateInfo> plctemplates = plcTemplateService.queryPlcTemplateList(siteId);
         // 查询消耗的
         Integer[] consumption = dataService.getConsumption();
         Integer[] electric = dataService.getElectric();
@@ -312,7 +195,7 @@ public class ThreadUtils {
         Integer[] hvac = dataService.getHVAC();
         Integer[] HVAC_GPD = contact(types, hvac);
         List<Integer> list = Arrays.asList(HVAC_GPD);
-        int count = 50;
+        int count = 30;
         int listSize = plctemplates.size();
         //线程数
         int runSize = (listSize / count) + 1;
@@ -337,7 +220,7 @@ public class ThreadUtils {
         }
         countDownLatch.await();  //主线程等待所有线程完成任务
         //所有线程完成任务后的一些业务
-        System.out.println("插入数据完成!");
+        System.out.println("siteId=" + siteId + "插入数据完成!");
         //关闭线程池
         executor.shutdown();
     }

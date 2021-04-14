@@ -41,14 +41,15 @@ public class MockUtilsCopy {
     }
 
     public static void clearMock() {
-        if (MOCK_OBJECT.size() > 5000) {
-            MOCK_OBJECT.clear();
+        if (MOCK_MAP.size() > 50) {
+            MOCK_MAP.clear();
         }
     }
 
 
     /**
      * mapToBean
+     *
      * @param map
      * @param beanClass
      * @return
@@ -71,14 +72,17 @@ public class MockUtilsCopy {
     }
 
 
-
     public static MockMapBean setResult(String resultName, Map<String, Object> map, boolean reset) {
+        clearMock();
         if (!reset && MOCK_MAP.get(resultName) != null) {
             throw new MockException("此映射已存在！this mock result has already exists.");
         } else {
             MockMapBean parser = ParameterParser.parser(map);
             MOCK_MAP.put(resultName, MockObjectFactory.createMapObj(parser));
             System.gc();
+            System.out.println();
+            System.out.println("=============MOCK_MAP.size()================="+MOCK_MAP.size());
+            System.out.println();
             return parser;
         }
     }

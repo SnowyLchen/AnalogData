@@ -49,6 +49,6 @@ public interface PlcTemplateMapper {
 //    @Delete("truncate table mfrs_plctemplate_info_temp")
     int deleteTemp(long time);
 
-    @Select("SELECT GROUP_CONCAT(plctemp_id) FROM mfrs_plctemplate WHERE del_flag=0 AND FIND_IN_SET(plc_type,'250,251,252,253,254,320')")
+    @Select("SELECT GROUP_CONCAT(plctemp_id) FROM mfrs_plctemplate WHERE del_flag=0 AND FIND_IN_SET(plc_type,#{plcTypes}) AND site_id=181")
     String queryPlctempIds(String plcTypes);
 }
