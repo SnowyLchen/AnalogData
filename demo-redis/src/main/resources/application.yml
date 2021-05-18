@@ -9,15 +9,15 @@ spring:
     name: demo-redis
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://39.100.146.125/hdzhny_mfrs?useUnicode=true&characterEncoding=utf8&userSSL=false&serverTimezone=GMT
+#    url: jdbc:mysql://39.100.146.125/hdzhny_mfrs?useUnicode=true&characterEncoding=utf8&userSSL=false&serverTimezone=GMT
 #    url: jdbc:mysql://192.168.1.200/hdzhny_mfrs?userSSL=false
-    #    url : jdbc:mysql://192.168.1.11/hdzhny_mfrs?userSSL=false
+    url : jdbc:mysql://192.168.1.194/hdzhny_mfrs?userSSL=false
     username: root
     #    password: root
     password: YZgP3oX2
     type: com.alibaba.druid.pool.DruidDataSource
   redis:
-    host: 39.105.42.13
+    host: 192.168.1.194
 #    host: 39.102.117.87
     timeout: 30000
     #    password: 1g47t6cj311w
@@ -74,7 +74,7 @@ application:
     # 散点
     scatter: ''
     # 暖通
-    hvac: '43,46,49,52,55,60,69,71,74,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,110,112,113,114,119,120,121,123,125,126,127,128,140,141,142,143,144,145'
+    hvac: '16,43,46,49,52,55,60,69,71,74,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,110,112,113,114,119,120,121,123,125,126,127,128,140,141,142,143,145'
 
 
 

@@ -13,7 +13,7 @@ public interface PlcTemplateMapper {
     List<MfrsPlctemplateInfo> queryPlcTemplateList();
 
     @Select("SELECT plctemp_id,regex, site_id, modbus, refe_key, register_lowercase, plc_code, temp_name, plc_type, remark, mfrs_id, status, del_flag, create_by, create_time, update_by, update_time\n" +
-            "FROM mfrs_plctemplate WHERE del_flag =0 AND site_id=#{siteId} order by plctemp_id desc")
+            "FROM mfrs_plctemplate WHERE del_flag =0 AND site_id=#{siteId} order by plctemp_id")
     List<MfrsPlctemplateInfo> queryPlcTemplateList2(Integer siteId);
 
     @Insert("INSERT INTO mfrs_plctemplate_info (plctemp_id,site_id,modbus,register_lowercase,refe_key,refe_value,status,mfrs_id,plc_info_time,del_flag,create_time,update_time)" +

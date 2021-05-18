@@ -103,7 +103,6 @@
                 url: 'gpd',
                 type: "post",
                 data: {count: val, siteId: siteId},
-                // data: {count: val, siteId: 181},
                 dataType: "json",
                 success: function (res) {
                     if (res.count == 0) {
@@ -123,8 +122,8 @@
         if (countDownTime <= 0) {
             var val = $("[name='count']").val();
             btnStartCss();
-            // site(13);
-            site(37)
+            site(13);
+            // site(37)
         } else {
             $("#countDown").html("即将开始<span>" + seconds + "秒</span>")
             setTimeout(countDown, 1000);
